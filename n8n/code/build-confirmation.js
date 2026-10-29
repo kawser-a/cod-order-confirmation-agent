@@ -13,6 +13,21 @@ const bn = (n) =>
     Math.round(Number(n)).toLocaleString("en-US").replace(/\d/g, (d) => BN_DIGITS[d]);
 const ZONE_LABEL = { inside_dhaka: "ঢাকার ভেতরে", outside_dhaka: "ঢাকার বাইরে" };
 
+// Every column the Update order node writes, with the row's current values,
+// so a sheet update never blanks a column by accident.
+const current = {
+    status: order.status,
+    address: order.address,
+    phone: order.phone,
+    telegram_chat_id: order.telegram_chat_id,
+    last_message_at: order.last_message_at,
+    risk_flags: order.risk_flags,
+    cancel_reason: order.cancel_reason,
+    seller_note: order.seller_note,
+    last_transcript: order.last_transcript,
+    tokens_used: order.tokens_used,
+};
+
 function result(action, replyText, sheetUpdate = null) {
     return [
         {
@@ -21,9 +36,8 @@ function result(action, replyText, sheetUpdate = null) {
                 chat_id: msg.chat_id,
                 reply_text: replyText,
                 should_update_sheet: sheetUpdate !== null,
-                row_number: order.row_number ?? null,
                 order_id: order.order_id ?? msg.order_id,
-                ...(sheetUpdate || {}),
+                ...(sheetUpdate ? { ...current, ...sheetUpdate } : {}),
             },
         },
     ];
@@ -39,7 +53,8 @@ if (!msg.order_id || !order.order_id) {
 
 // 2. The order is already linked to a different Telegram account.
 //    Order numbers are easy to guess, so never show one customer's address to someone else.
-if (order.telegram_chat_id && order.telegram_chat_id !== msg.chat_id) {
+// (The sheet may hand the ID back as a number, so compare as text.)
+if (order.telegram_chat_id && String(order.telegram_chat_id) !== msg.chat_id) {
     return result("wrong_chat", "দুঃখিত, এই অর্ডারটি অন্য একটি একাউন্টের সাথে যুক্ত। সাহায্যের জন্য আমাদের পেজে মেসেজ দিন।");
 }
 
