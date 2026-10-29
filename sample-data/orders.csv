@@ -1,0 +1,7 @@
+order_id,created_at,customer_name,phone,address,delivery_zone,items,quantity,unit_price_bdt,delivery_charge_bdt,total_bdt,status,telegram_chat_id,last_message_at,reminders_sent,risk_flags,cancel_reason,seller_note,last_transcript,tokens_used
+1000,2026-10-20 11:15,Sabbir Rahman,01911556677,"House 3, Sector 7, Uttara, Dhaka",inside_dhaka,T-shirt pack (3 pcs),1,990,80,1070,cancelled,,,0,,ordered by mistake,,,0
+1001,2026-10-29 14:00,Rafi Hasan,01712345678,"House 12, Road 5, Mirpur 10, Dhaka",inside_dhaka,Panjabi (L),1,1250,80,1330,new,,,0,,,,,0
+1002,2026-10-29 14:05,Nusrat Jahan,01898765432,"Flat 4B, House 7, Road 2, Dhanmondi, Dhaka",inside_dhaka,Three-piece (M),2,1650,80,3380,new,,,0,,,,,0
+1003,2026-10-29 14:10,Tanvir Ahmed,0171234,Chittagong,outside_dhaka,Hoodie (XL),3,1800,150,5550,new,,,0,,,,,0
+1004,2026-10-29 14:15,Mim Akter,01611223344,"Kalia village, Sadar upazila, Narail",outside_dhaka,Saree (cotton),1,2400,150,2550,new,,,0,,,,,0
+1005,2026-10-29 14:20,Sabbir Rahman,01911556677,"House 3, Sector 7, Uttara, Dhaka",inside_dhaka,T-shirt pack (3 pcs),1,990,80,1070,new,,,0,,,,,0
