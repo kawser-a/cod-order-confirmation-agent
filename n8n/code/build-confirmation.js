@@ -13,12 +13,21 @@ const bn = (n) =>
     Math.round(Number(n)).toLocaleString("en-US").replace(/\d/g, (d) => BN_DIGITS[d]);
 const ZONE_LABEL = { inside_dhaka: "ঢাকার ভেতরে", outside_dhaka: "ঢাকার বাইরে" };
 
+// Google Sheets drops the leading 0 if a phone is stored as a number, so put it back.
+function normalisePhone(raw) {
+    let digits = String(raw || "").replace(/\D/g, "");
+    if (digits.startsWith("880")) digits = digits.slice(2);
+    if (/^1[3-9]\d{8}$/.test(digits)) digits = "0" + digits;
+    return digits;
+}
+const phone = normalisePhone(order.phone) || String(order.phone || "");
+
 // Every column the Update order node writes, with the row's current values,
 // so a sheet update never blanks a column by accident.
 const current = {
     status: order.status,
     address: order.address,
-    phone: order.phone,
+    phone,
     telegram_chat_id: order.telegram_chat_id,
     last_message_at: order.last_message_at,
     risk_flags: order.risk_flags,
@@ -53,8 +62,8 @@ if (!msg.order_id || !order.order_id) {
 
 // 2. The order is already linked to a different Telegram account.
 //    Order numbers are easy to guess, so never show one customer's address to someone else.
-// (The sheet may hand the ID back as a number, so compare as text.)
-if (order.telegram_chat_id && String(order.telegram_chat_id) !== msg.chat_id) {
+// (The sheet may hand the ID back as a number or as text, so compare as numbers.)
+if (order.telegram_chat_id && Number(order.telegram_chat_id) !== Number(msg.chat_id)) {
     return result("wrong_chat", "দুঃখিত, এই অর্ডারটি অন্য একটি একাউন্টের সাথে যুক্ত। সাহায্যের জন্য আমাদের পেজে মেসেজ দিন।");
 }
 
@@ -76,10 +85,10 @@ const delivery = Number(order.delivery_charge_bdt);
 const total = Number(order.total_bdt);
 const flags = [];
 
-if (!/^01[3-9]\d{8}$/.test(String(order.phone).trim())) flags.push("invalid_phone");
+if (!/^01[3-9]\d{8}$/.test(phone)) flags.push("invalid_phone");
 if (String(order.address).split(",").filter((p) => p.trim()).length < 3) flags.push("address_incomplete");
 if (total > 5000) flags.push("high_value");
-if (pastOrders.some((p) => p.phone === order.phone && p.order_id !== order.order_id && p.status === "cancelled")) {
+if (pastOrders.some((p) => normalisePhone(p.phone) === phone && p.order_id !== order.order_id && p.status === "cancelled")) {
     flags.push("cancelled_before");
 }
 const totalIsWrong = qty * unit + delivery !== total;
@@ -106,7 +115,7 @@ const text = [
     `• ডেলিভারি চার্জ (${ZONE_LABEL[order.delivery_zone] || order.delivery_zone}) — ${bn(delivery)} টাকা`,
     `মোট: ${bn(total)} টাকা, ক্যাশ অন ডেলিভারি`,
     `ঠিকানা: ${order.address}`,
-    `ফোন: ${order.phone}`,
+    `ফোন: ${phone}`,
     "",
     `সব ঠিক থাকলে "হ্যাঁ" লিখুন বা ভয়েস পাঠান। কিছু বদলাতে চাইলে জানান।`,
 ].join("\n");

@@ -12,12 +12,16 @@ const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
 const bn = (n) =>
     Math.round(Number(n)).toLocaleString("en-US").replace(/\d/g, (d) => BN_DIGITS[d]);
 
-// Customers type numbers in Bangla digits, with spaces, or with +88. Normalise to 01XXXXXXXXX.
+// Customers type numbers in Bangla digits, with spaces, or with +88, and Google
+// Sheets drops the leading 0 if a number is stored as a number. Normalise all
+// of these to 01XXXXXXXXX.
 function normalisePhone(raw) {
-    const digits = String(raw || "")
+    let digits = String(raw || "")
         .replace(/[০-৯]/g, (d) => String(BN_DIGITS.indexOf(d)))
         .replace(/\D/g, "");
-    return digits.startsWith("880") ? digits.slice(2) : digits;
+    if (digits.startsWith("880")) digits = digits.slice(2);
+    if (/^1[3-9]\d{8}$/.test(digits)) digits = "0" + digits;
+    return digits;
 }
 const isValidPhone = (p) => /^01[3-9]\d{8}$/.test(p);
 
@@ -26,7 +30,7 @@ const isValidPhone = (p) => /^01[3-9]\d{8}$/.test(p);
 const row = {
     status: order.status,
     address: order.address,
-    phone: order.phone,
+    phone: normalisePhone(order.phone) || order.phone,
     telegram_chat_id: order.telegram_chat_id,
     last_message_at: now,
     risk_flags: order.risk_flags,
