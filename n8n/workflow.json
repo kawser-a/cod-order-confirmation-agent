@@ -219,8 +219,8 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $json.chat_id }}",
-        "text": "={{ $json.reply_text }}",
+        "chatId": "={{ $('Update sheet?').item.json.chat_id }}",
+        "text": "={{ $('Update sheet?').item.json.reply_text }}",
         "additionalFields": {
           "appendAttribution": false
         }
@@ -229,7 +229,7 @@
       "typeVersion": 1.2,
       "position": [
         1344,
-        -144
+        -176
       ],
       "id": "c8ab5990-b688-4790-90d4-36602749b3a2",
       "name": "Send reply",
@@ -765,11 +765,6 @@
       "main": [
         [
           {
-            "node": "Send reply",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Update sheet?",
             "type": "main",
             "index": 0
@@ -787,6 +782,13 @@
         [
           {
             "node": "Update order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send reply",
             "type": "main",
             "index": 0
           }
@@ -826,7 +828,7 @@
         ],
         [
           {
-            "node": "Send reply",
+            "node": "Update sheet?",
             "type": "main",
             "index": 0
           }
@@ -848,11 +850,6 @@
       "main": [
         [
           {
-            "node": "Send reply",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Update sheet?",
             "type": "main",
             "index": 0
@@ -861,6 +858,17 @@
       ]
     },
     "Ask for text": {
+      "main": [
+        [
+          {
+            "node": "Update sheet?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update order": {
       "main": [
         [
           {
@@ -877,7 +885,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "2551fa1a-874f-4ff4-bd3e-c4b1fbce8c3e",
+  "versionId": "74848b26-69ce-4698-9c2a-9f558503048c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "10ad6ea20d6d4d70866396c4556ff03fadcf3312e7110ba76d21430d6996dd11"
