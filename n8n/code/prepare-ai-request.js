@@ -13,7 +13,18 @@ const order = rows
     .sort((a, b) => Number(b.row_number) - Number(a.row_number))[0];
 
 if (!order) {
-    return [{ json: { has_active_order: false, chat_id: msg.chat_id } }];
+    return [
+        {
+            json: {
+                has_active_order: false,
+                action: "no_active_order",
+                chat_id: msg.chat_id,
+                reply_text:
+                    "আপনার কোনো অর্ডার কনফার্মেশনের অপেক্ষায় নেই। নতুন অর্ডারের জন্য আমাদের ফেসবুক পেজে মেসেজ দিন।",
+                should_update_sheet: false,
+            },
+        },
+    ];
 }
 
 const TEXT_MODEL = "gemini-3.5-flash-lite"; // smallest stable model; enough for short replies
@@ -44,6 +55,7 @@ Rules:
 - Never change prices or quantities yourself. For change_items, say the seller will check and get back to them.
 - new_address and new_phone: copy what the customer said, only for those intents; otherwise null.
 - address_complete: true if the address that will be used (new_address if given, else the current one) has a house, road or village, an area or thana, and a district. False if any is missing.
+- address_in_dhaka: true if that address is inside Dhaka city, false if outside.
 - cancel_reason: the reason in English if they gave one, else null.
 - transcript: if the reply is a voice note, write what they said in the original language; else null.
 - reply: a short, warm message to the customer, under 50 words, in the same language and script they used (Bangla, English or Banglish). Bangla if unsure. No markdown.
@@ -92,12 +104,13 @@ const request = {
                 new_address: nullableString,
                 new_phone: nullableString,
                 address_complete: { type: "BOOLEAN" },
+                address_in_dhaka: { type: "BOOLEAN" },
                 cancel_reason: nullableString,
                 transcript: nullableString,
                 language: { type: "STRING", enum: ["bn", "en", "banglish"] },
                 reply: { type: "STRING" },
             },
-            required: ["intent", "address_complete", "language", "reply"],
+            required: ["intent", "address_complete", "address_in_dhaka", "language", "reply"],
         },
         maxOutputTokens: 1024,
     },
