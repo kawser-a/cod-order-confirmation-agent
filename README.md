@@ -4,7 +4,7 @@ A Telegram agent for small f-commerce shops in Bangladesh. It confirms cash-on-d
 
 Built with **n8n**, the **Gemini API** (`gemini-3.5-flash-lite`, free tier), **Google Sheets** and the **Telegram Bot API**.
 
-**Demo video (2 min):** _add Loom link_
+   **Demo video (3 min):** [Watch the walkthrough on Google Drive](https://drive.google.com/file/d/1zPiMCdmyeNp5QeHcsI73vJZAR3AqeW46/view?usp=sharing)
 
 ---
 
